@@ -136,7 +136,6 @@ void Block::Decrypt()
         {
             DoDecrypt();
         }
-
     }
     else
     {

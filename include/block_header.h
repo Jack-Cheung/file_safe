@@ -1,7 +1,7 @@
 #ifndef BLOCKHEADER_H
 #define BLOCKHEADER_H
 
-
+#include "global.h"
 class BlockHeader
 {
 public:

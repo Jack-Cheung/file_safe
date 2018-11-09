@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 
+using namespace std;
 using namespace chrono;
 
 string GetFileName(const string& fullFileName);

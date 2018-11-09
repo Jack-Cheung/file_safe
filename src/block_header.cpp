@@ -3,11 +3,11 @@
 
 BlockHeader::BlockHeader()
 {
-    m_data = new char[ENCRIPT_SIZE + 8];
+    m_data = (unsigned char*)(new char[ENCRIPT_SIZE + 8]);
     memset(m_data, 0, ENCRIPT_SIZE + 8);
 }
 
-~BlockHeader::BlockHeader()
+BlockHeader::~BlockHeader()
 {
     if(m_data)
     {
