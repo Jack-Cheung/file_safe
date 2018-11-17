@@ -11,11 +11,9 @@ string Crypt::GenerateSHA256(const string& file_path)
     unsigned char	buf[BUFLEN] = {0};
     string hashCode;
     SHA256_Init(&ctx256);
-    int fd = open(file_path.c_str(), O_RDONLY);
-    if(fd == -1)
-        throw strerror(errno);
+    ifstream fs(file_path, fs.in);
     int l = 0;
-    while ((l = read(fd,buf,BUFLEN)) > 0)
+    while ((l = fs.readsome((char*)buf,BUFLEN)) > 0)
     {
         SHA256_Update(&ctx256, (unsigned char*)buf, l);
     }
@@ -49,10 +47,6 @@ void Crypt::EncryptFile()
 {
     unsigned int cnt = GetFileSize(m_infilePath);
     unsigned int blockNumber = ceil(cnt * 1.0 / BLOCK_SIZE);
-    //int ifd = open(m_infilePath.c_str(), O_RDONLY);
-    //int ofd = open(m_outfilePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, MODE);
-    //if(ifd == -1 || ofd == -1)
-        //throw strerror(errno);
     fstream ifs(m_infilePath, fstream::in);
     fstream ofs(m_outfilePath, fstream::out | fstream::trunc);
     m_header.m_number = blockNumber;
@@ -65,18 +59,12 @@ void Crypt::EncryptFile()
         block.Encrypt();
         block.Write();
     }
-    //close(ifd);
-    //close(ofd);
     ifs.close();
     ofs.close();
 }
 
 void Crypt::DecryptFile()
 {
-    /* int ifd = open(m_infilePath.c_str(), O_RDONLY);
-    int ofd = open(m_outfilePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, MODE);
-    if(ifd == -1 || ofd == -1)
-        throw strerror(errno); */
     fstream ifs(m_infilePath, fstream::in);
     fstream ofs(m_outfilePath, fstream::out | fstream::trunc);
     m_header.Read(ifs);
@@ -88,8 +76,6 @@ void Crypt::DecryptFile()
         block.Decrypt();
         block.Write();
     }
-    /* close(ifd);
-    close(ofd); */
     ifs.close();
     ofs.close();
 }
@@ -97,12 +83,11 @@ void Crypt::DecryptFile()
 unsigned long Crypt::GetFileSize(const string& file_path)
 {
     unsigned long filesize = -1;
-    FILE *fp;
-    fp = fopen(file_path.c_str(), "r");
-    if(fp == NULL)
-        return filesize;
-    fseek(fp, 0L, SEEK_END);
-    filesize = ftell(fp);
-    fclose(fp);
+    ifstream ifs(file_path, ifs.in);
+    if(ifs)
+    {
+        ifs.seekg(0, ifs.end);
+        filesize = ifs.tellg();
+    }
     return filesize;
 }

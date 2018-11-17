@@ -2,7 +2,7 @@
 
 #include "global.hpp"
 #include "file_header.hpp"
-/*
+/**
 * class Block
 * contain data of one file block, read and write function should be used in pair
 * block is composed of header, content, tail
@@ -12,7 +12,6 @@ class Block
 {
     public:
 
-        //Block(int ifd, int ofd);//
         Block(istream& is, ostream& os, int totalBlock);
         ~Block();
 
@@ -20,8 +19,6 @@ class Block
 
         void Read(unsigned int nIdx, unsigned int nTotalNum, unsigned int type = ORIGIN);
         void Write(unsigned int type = ORIGIN);
-
-
 
         void Encrypt();
         void Decrypt();

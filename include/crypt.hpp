@@ -1,5 +1,4 @@
-#ifndef CRYPT_H
-#define CRYPT_H
+#pragma once
 
 #include "global.hpp"
 #include "file_header.hpp"
@@ -27,5 +26,3 @@ private:
     string m_infilePath;
     string m_outfilePath;
 };
-
-#endif // CRYPT_H

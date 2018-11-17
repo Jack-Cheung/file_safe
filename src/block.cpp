@@ -5,10 +5,9 @@
 Block::Block(istream& is, ostream& os, int totalBlock):m_is(is),m_os(os)
 {
     m_headerData = new unsigned char[ENCRIPT_SIZE];
-    //m_contentData = new unsigned char[UNENCRIPT_SIZE];
     m_tailData = new unsigned char[ENCRIPT_SIZE];
     m_data = new unsigned char[BLOCK_SIZE];
-    if(!m_headerData /* || !m_contentData */ || !m_tailData || !m_data)
+    if(!m_headerData || !m_tailData || !m_data)
     {
         throw "low memory!";
     }

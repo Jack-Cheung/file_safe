@@ -1,5 +1,4 @@
-#ifndef FILEHEADER_H
-#define FILEHEADER_H
+#pragma once
 #include "global.hpp"
 
 class FileHeader
@@ -8,8 +7,6 @@ public:
     FileHeader();
     ~FileHeader() = default;
     void Clear();
-    //void Read(int fd);//
-    //void Write(int fd);//
 
     void Read(istream& is);
     void Write(ostream& os);
@@ -19,4 +16,3 @@ public:
     static const int BYTES = FILE_HEARER_SIZE;
 };
 
-#endif // FILEHEADER_H
