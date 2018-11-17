@@ -1,9 +1,9 @@
 #ifndef CRYPT_H
 #define CRYPT_H
 
-#include "global.h"
-#include "file_header.h"
-#include "block.h"
+#include "global.hpp"
+#include "file_header.hpp"
+#include "block.hpp"
 
 class Crypt
 {
