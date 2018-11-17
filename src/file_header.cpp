@@ -2,7 +2,6 @@
 #include "global.h"
 FileHeader::FileHeader()
 {
-    //ctor
     Clear();
 }
 

@@ -1,5 +1,4 @@
-#ifndef BLOCKHEADER_H
-#define BLOCKHEADER_H
+#pragma once
 
 #include "global.h"
 class BlockHeader
@@ -16,7 +15,6 @@ public:
 
     void Encrypt();
 
-
     unsigned int m_posBeg;//the index of this block content
     unsigned int m_posEnd;// to do
     unsigned int m_ifEncrypted;
@@ -28,4 +26,3 @@ private:
     unsigned char* m_data;
 };
 
-#endif // BLOCKHEADER_H

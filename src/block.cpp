@@ -1,5 +1,5 @@
 #include "block.h"
-#include <rpc/des_crypt.h>
+#include <rpc/des_crypt.h>// openssl
 
 Block::Block(int ifd, int ofd)
 {
@@ -56,8 +56,6 @@ void Block::Read(unsigned int nIdx, unsigned int nTotalNum, unsigned int type /*
     {
         cursor = m_idx * BLOCK_SIZE;
     }
-
-    //cursor = m_idx * BLOCK_SIZE ;
 
     unsigned int count = 0, nRead = 0;
     static const int BUF_SIZE = 1024;

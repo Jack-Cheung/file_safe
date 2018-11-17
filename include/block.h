@@ -1,9 +1,11 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#pragma once
 
 #include "global.h"
 #include "file_header.h"
-
+/*
+* class Block
+* contain data of one file block, read and write function should be used in pair
+*/
 class Block
 {
     public:
@@ -23,10 +25,9 @@ class Block
     protected:
 
     private:
-        //Block();
+
         void DoEncrypt();
         void DoDecrypt();
-
 
         unsigned char* m_headerData;
         unsigned char* m_contentData;
@@ -41,5 +42,3 @@ class Block
         int m_ifd;
         int m_ofd;
 };
-
-#endif // BLOCK_H

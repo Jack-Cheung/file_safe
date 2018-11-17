@@ -29,8 +29,8 @@ void Crypt::Encrypt(const string& infile_path, const string& outfile_path)
     m_outfilePath = outfile_path;
     CleanUp();
     EncryptFile();
-
 }
+
 void Crypt::Decrypt(const string& infile_path, const string& outfile_path)
 {
     m_infilePath = infile_path;
@@ -68,7 +68,6 @@ void Crypt::EncryptFile()
 
 void Crypt::DecryptFile()
 {
-    //unsigned int readCusor = 0, writeCusor = 0;
     int ifd = open(m_infilePath.c_str(), O_RDONLY);
     int ofd = open(m_outfilePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, MODE);
     if(ifd == -1 || ofd == -1)

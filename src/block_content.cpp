@@ -15,7 +15,7 @@ BlockContent::~BlockContent()
         delete [] m_data;
 }
 
-void BlockContent::Read(int fd, unsigned int size, unsigned int& cursor, int direction)//add a parameter direction 0-encrypt 1-decrypt
+void BlockContent::Read(int fd, unsigned int size, unsigned int& cursor)//add a parameter direction 0-encrypt 1-decrypt
 {
     unsigned int count = 0, nRead = 0;
     static const int BUF_SIZE = 1024;
@@ -43,11 +43,10 @@ void BlockContent::Read(int fd, unsigned int size, unsigned int& cursor, int dir
     cursor += size;
 }
 
-void BlockContent::Write(int fd, unsigned int size, unsigned int& cursor, int direction)
+void BlockContent::Write(int fd, unsigned int size, unsigned int& cursor)
 {
     lseek(fd, cursor, SEEK_SET);
     unsigned char* src = m_data;
-    //direction == ENCRYPT ? src = m_encrypedData : src = m_originData;
     write(fd, src, size);
     cursor += size;
 }
@@ -55,52 +54,4 @@ void BlockContent::Write(int fd, unsigned int size, unsigned int& cursor, int di
 void BlockContent::Clear()
 {
     memset(m_data, 0, BLOCK_SIZE * sizeof(unsigned char));
-//    m_plainTextlen = 0;
-//    m_cipherTextLen = 0;
 }
-
-//unsigned int BlockContent::Encrpt(unsigned int size)
-//{
-//    base64_encodestate es;
-//    base64_init_encodestate(&es);
-//    int cnt = 0, pos = 0;
-//    cnt = base64_encode_block((const char*)m_originData, size + 1, (char*)m_encrypedData, &es);
-//    pos += cnt;
-//    cnt = base64_encode_blockend((char*)m_encrypedData + pos, &es);
-//    return pos;
-//}
-
-//unsigned int RawContent::Encrpt(unsigned int size)
-//{
-//    m_plainTextlen = size;
-//    if(size % 8)
-//    {
-//        size += 8 - size % 8;
-//    }
-//    m_cipherTextLen = size;
-//    memcpy(m_encrypedData, m_originData, size);
-//    ecb_crypt(KEY, (char*)m_encrypedData, size, DES_ENCRYPT);
-//    printf("%s", m_encrypedData);
-//    return size;
-//}
-
-//unsigned int BlockContent::Decrpt(unsigned int size)
-//{
-//    base64_decodestate s;
-//    base64_init_decodestate(&s);
-//    int cnt = 0, pos = 0;
-//    cnt = base64_decode_block((const char*)m_encrypedData, size, (char*)m_originData, &s);
-//    pos += cnt;
-//    return pos;
-//}
-
-//unsigned int RawContent::Decrpt(unsigned int size)
-//{
-//    memcpy(m_originData, m_encrypedData, size);
-//    ecb_crypt(KEY, (char*)m_originData, size, DES_DECRYPT);
-//    if(size == 0)
-//    {
-//        throw "something go wrong";
-//    }
-//    return size;
-//}
