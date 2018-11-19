@@ -106,23 +106,15 @@ void Block::Write(unsigned int type /*= ORIGINAL*/)
 
 void Block::Encrypt()
 {
-    if(m_totalBlocksNum - 1 == m_idx)
-    {
-        // last block
-        unsigned int bytes = GetSize();
-        if(bytes >= ENCRIPT_SIZE * 2)
-        {
-            DoEncrypt();
-        }
-
-    }
-    else
-    {
-        DoEncrypt();
-    }
+    DoEncryptOrDecrypt(bind(&Block::DoEncrypt, this));
 }
-//same
+
 void Block::Decrypt()
+{
+    DoEncryptOrDecrypt(bind(&Block::DoDecrypt, this));
+}
+
+void  Block::DoEncryptOrDecrypt(std::function<void(void)> func)
 {
     if(m_totalBlocksNum - 1 == m_idx)
     {
@@ -130,12 +122,12 @@ void Block::Decrypt()
         unsigned int bytes = GetSize();
         if(bytes >= ENCRIPT_SIZE * 2)
         {
-            DoDecrypt();
+            func();
         }
     }
     else
     {
-        DoDecrypt();
+        func();
     }
 }
 

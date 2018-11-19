@@ -2,6 +2,7 @@
 
 #include "global.hpp"
 #include "file_header.hpp"
+#include <functional>
 /**
 * class Block
 * contain data of one file block, read and write function should be used in pair
@@ -31,6 +32,7 @@ class Block
 
         void DoEncrypt();
         void DoDecrypt();
+        void DoEncryptOrDecrypt(std::function<void(void)> );
         /*<to hold encrypted header data or decrypted header data*/
         unsigned char* m_headerData;
         /*<to hold encrypted tail data or decrypted tail data*/
