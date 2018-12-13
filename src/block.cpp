@@ -1,27 +1,23 @@
-#include "block.h"
+#include "block.hpp"
 #include <rpc/des_crypt.h>// openssl
 
-Block::Block(int ifd, int ofd)
+
+Block::Block(istream& is, ostream& os, int totalBlock):m_is(is),m_os(os)
 {
     m_headerData = new unsigned char[ENCRIPT_SIZE];
-    m_contentData = new unsigned char[UNENCRIPT_SIZE];
     m_tailData = new unsigned char[ENCRIPT_SIZE];
     m_data = new unsigned char[BLOCK_SIZE];
-    if(!m_headerData || !m_contentData || !m_tailData || !m_data)
+    if(!m_headerData || !m_tailData || !m_data)
     {
         throw "low memory!";
     }
-    m_ifd = ifd;
-    m_ofd = ofd;
 }
+
 
 Block::~Block()
 {
-    //dtor
     if(m_headerData)
         delete [] m_headerData;
-    if(m_contentData)
-        delete [] m_contentData;
     if(m_tailData)
         delete [] m_tailData;
     if(m_data)
@@ -32,23 +28,21 @@ void Block::Clear()
 {
     //printf("clear =%p   %p   %p   %p", m_headerData, m_contentData, m_tailData, m_data);
     memset(m_headerData, 0, ENCRIPT_SIZE * sizeof(unsigned char));
-    memset(m_contentData, 0, UNENCRIPT_SIZE * sizeof(unsigned char));
     memset(m_tailData, 0, ENCRIPT_SIZE * sizeof(unsigned char));
     memset(m_data, 0, BLOCK_SIZE * sizeof(unsigned char));
     m_bytes = 0;
-    m_fileType = 0;// encrypt or decrypt
+    m_usage = 0;
     m_totalBlocksNum = 0;
     m_idx = 0;
 }
 
-void Block::Read(unsigned int nIdx, unsigned int nTotalNum, unsigned int type /*= ORIGINAL*/)
+void Block::Read(unsigned int nIdx, unsigned int nTotalNum, unsigned int type )
 {
     unsigned int cursor = 0;
     m_totalBlocksNum = nTotalNum;
     m_idx = nIdx;
-    m_fileType = type;
-
-    if(m_fileType == ENCRYPT)
+    m_usage = type;
+    if(m_usage == ENCRYPT)
     {
         cursor = m_idx * BLOCK_SIZE + FileHeader::BYTES;
     }
@@ -56,39 +50,44 @@ void Block::Read(unsigned int nIdx, unsigned int nTotalNum, unsigned int type /*
     {
         cursor = m_idx * BLOCK_SIZE;
     }
-
-    unsigned int count = 0, nRead = 0;
-    static const int BUF_SIZE = 1024;
-    unsigned char buff[BUF_SIZE] = {0};
-    lseek(m_ifd, cursor, SEEK_SET);
-    unsigned char* target = nullptr;
-    while(true)
+    m_is.seekg(cursor);
+    if(nIdx < nTotalNum - 1)
     {
-        if(count >= BLOCK_SIZE)
-            break;
-        if(count + BUF_SIZE > BLOCK_SIZE)
-        {
-            nRead = read(m_ifd, buff, BLOCK_SIZE % BUF_SIZE);
-        }
-        else
-        {
-            nRead = read(m_ifd, buff, BUF_SIZE);
-        }
-        if(nRead <= 0)
-            break;
-        target = m_data + count;
-        memcpy(target, buff, nRead);
-        count += nRead;
+        m_is.read((char*)m_data, BLOCK_SIZE);
+        m_bytes = BLOCK_SIZE;
     }
-    m_bytes = count;
-    if(m_bytes > ENCRIPT_SIZE * 2)
-        memcpy(m_contentData, m_data + ENCRIPT_SIZE, m_bytes - 2 * ENCRIPT_SIZE);// is useful?
+    else
+    {
+        unsigned int count = 0, nRead = 0;
+        static const int BUF_SIZE = 1024;
+        unsigned char buff[BUF_SIZE] = {0};
+        unsigned char* target = nullptr;
+        while(true)
+        {
+            if(count >= BLOCK_SIZE)
+                break;
+            if(count + BUF_SIZE > BLOCK_SIZE)
+            {
+                nRead = m_is.readsome((char*)buff, BLOCK_SIZE % BUF_SIZE);
+            }
+            else
+            {
+                nRead = m_is.readsome((char*)buff, BUF_SIZE);
+            }
+            if(nRead <= 0)
+                break;
+            target = m_data + count;
+            memcpy(target, buff, nRead);
+            count += nRead;
+        }
+        m_bytes = count;
+    }
 }
 
 void Block::Write(unsigned int type /*= ORIGINAL*/)
 {
     unsigned int cursor = 0;
-    if(m_fileType == ENCRYPT)
+    if(m_usage == ENCRYPT)
     {
         cursor = m_idx * BLOCK_SIZE;
     }
@@ -96,14 +95,13 @@ void Block::Write(unsigned int type /*= ORIGINAL*/)
     {
         cursor = m_idx * BLOCK_SIZE + FileHeader::BYTES;
     }
-    lseek(m_ofd, cursor, SEEK_SET);
+    m_os.seekp(cursor);
     if(m_bytes >= ENCRIPT_SIZE * 2)
     {
         memcpy(m_data, m_headerData, ENCRIPT_SIZE);
         memcpy(m_data + m_bytes - ENCRIPT_SIZE, m_tailData, ENCRIPT_SIZE);
     }
-    unsigned char* src = m_data;
-    write(m_ofd, src, m_bytes);
+    m_os.write((const char*)m_data, m_bytes);
 }
 
 void Block::Encrypt()
