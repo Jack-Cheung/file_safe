@@ -1,16 +1,20 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(file_safe)
-add_definitions(-std=c++11)
-#set(BOOST_ROOT $ENV{HOME}/opt/boost/)
+add_definitions(-std=c++14)
+
+set(BOOST_ROOT $ENV{HOME}/opt/boost/)
 #set(BOOST_COMPONENTS system thread program_options)
 #set(BOOST_INCLUDEDIR $ENV{HOME}/opt/boost/include)
 #find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 #add_subdirectory(util)
 #add_subdirectory(tcp-client)
 #add_subdirectory(tcp-server)
+
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -g)
 #include_directories(${BOOST_INCLUDEDIR} ${PROJECT_SOURCE_DIR}/util/include )
 include_directories( ${PROJECT_SOURCE_DIR}/include )
+add_subdirectory("libraries/appbase")
+add_subdirectory("libraries/fc")
 set( source_dir ${PROJECT_SOURCE_DIR}/src )
 set( source_file                                
                   ${source_dir}/block.cpp

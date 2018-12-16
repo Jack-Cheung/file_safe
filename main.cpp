@@ -1,13 +1,44 @@
 #include "crypt.hpp"
 #include <iostream>
-#include <chrono>
-
+#include "CLI11.hpp"
+//#include "libraries/fc/"
 using namespace std;
-using namespace chrono;
 
 string GetFileName(const string& fullFileName);
 string GetFileSuffix(const string& fullFileName);
 
+string filepath;
+string outputfilepath = "./a.out";
+bool decrypt = false;
+
+int main(int argc, char** argv)
+{
+   CLI::App app{"Command Line Interface to FileSafe"};
+   app.add_option( "-P,--file-path", filepath, "the file you want to deal with" )->required();
+   app.add_flag( "-d,--decrpty", decrypt, "decrypt the file, if not set this flag, encrypt the file");
+   app.add_option("-O,--output-path", outputfilepath,"the output file path",true);
+   app.set_callback([&]()
+   {
+    Crypt  tool;
+    if(decrypt)
+    {
+        tool.Decrypt(filepath, outputfilepath);
+    }
+    else
+    {
+        tool.Encrypt(filepath, outputfilepath);
+    }
+   });
+   try {
+       app.parse(argc, argv);
+   } catch (const CLI::ParseError &e) {
+       return app.exit(e);
+   } 
+   return 1;
+}
+
+
+#if 0
 int main()
 {
     do
@@ -67,7 +98,7 @@ int main()
     }while(true);
     return 1;
 }
-
+#endif
 string GetFileName(const string& fullFileName)
 {
     size_t posOfDell = fullFileName.find_last_of(".");
